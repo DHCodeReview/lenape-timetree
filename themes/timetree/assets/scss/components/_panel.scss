@@ -1,0 +1,410 @@
+$tag-height: 40px;
+$desktop-panel-maxheight: calc(100% - 120px - 38px - 27px);
+// FIXME: the 100% here doesn't work for panel AND article within panel,
+// because they are proportional to different things.
+// Can we calculate based on 100vh ?
+
+body.home main > aside {
+  // on mobile, panel is positioned absolutely at bottom of screen
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1;
+
+  height: calc(44vh + #{$tag-height});
+  max-height: calc(44vh + #{$tag-height});
+
+  // aside container is a flexible column
+  display: grid;
+  grid-template-rows: $tag-height auto 0;
+  grid-template-areas:
+    "tag"
+    "details"
+    "hidden";
+  justify-items: end; // on mobile, stick to bottom
+
+  color: $nearwhite;
+
+  // status div for screen reader status should be hidden from sighted users
+  [role="status"][aria-live] {
+    opacity: 0;
+    height: 0;
+    width: 0;
+  }
+
+  // hidden anchor element for focus management
+  #panel {
+    opacity: 0; // visually hidden; announce for screen reader only
+    position: absolute;
+    top: 0;
+    pointer-events: none; // don't block clicks on active tag button
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  @include for-desktop-up {
+    position: relative;
+    grid-area: panel;
+    margin-top: 80px; // panel is 120px from top; aside includes 40px for active tag
+    // side margins needed for box shadow to display
+    margin-right: 4px;
+    margin-left: 4px;
+    justify-items: start; // on desktop, stick to top
+
+    height: auto; // set based on content height
+    max-height: $desktop-panel-maxheight;
+    max-width: 20.5rem; // + 8 for margins?
+    min-width: 16rem;
+  }
+
+  // allow closing the intro on mobile
+  @include for-mobile {
+    &.closed {
+      height: 0;
+      visibility: hidden; /* hide from screen readers */
+      overflow: hidden;
+
+      #intro,
+      article,
+      > .close {
+        height: 0;
+        visibility: hidden; /* hide from screen readers */
+      }
+    }
+  }
+
+  &.show-details {
+    #intro,
+    article {
+      height: auto;
+      overflow: scroll;
+
+      // don't scroll beyond
+      overscroll-behavior: contain;
+    }
+    > .close {
+      height: auto;
+      visibility: visible;
+    }
+  }
+
+  @include for-desktop-up {
+    > .close {
+      // on desktop, close button is not shown by default
+      visibility: hidden;
+    }
+    // hide the close button unless panel has content
+    &.show-details .close {
+      visibility: visible;
+    }
+    &.closed {
+      visibility: visible;
+    }
+  }
+
+  // use before & after elements to add a gradient
+  // so text will fade out when scrolling
+  &:before,
+  &:after {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: $tag-height;
+    content: " ";
+    background: linear-gradient($nav-bg-color, transparent);
+  }
+
+  // don't display gradients when the panel is closed
+  @include for-mobile {
+    &.closed {
+      &:before,
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  &:before {
+    top: $tag-height;
+    background: linear-gradient($nav-bg-color, transparent);
+  }
+  &:after {
+    bottom: 0;
+    background: linear-gradient(transparent, $nav-bg-color);
+
+    // can't currently position lower fade correctly on desktop;
+    // suppress for now
+    @include for-desktop-up {
+      display: none;
+    }
+  }
+
+  // close button
+  > .close {
+    position: absolute;
+    top: $tag-height; // position below active tag
+    padding: 16px 12px 0 0;
+    width: 40px;
+    text-align: right;
+    cursor: pointer;
+
+    z-index: 3;
+    text-decoration: none;
+    background-color: $nav-bg-color;
+
+    @include for-desktop-up {
+      margin: 4px 4px;
+      width: auto;
+      right: 8px; // make room for scrollbar
+    }
+
+    .ph-x {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  // panel for leaf details is hidden by default;
+  // intro content is hidden when leaf details are displayed
+  #leaf-details,
+  &.show-details #intro {
+    height: 0;
+    min-height: 0;
+    visibility: hidden;
+    overflow: hidden;
+    padding: 0;
+    grid-area: hidden;
+  }
+
+  &.show-details #leaf-details,
+  &.show-details article,
+  #intro {
+    height: 44vh;
+    visibility: visible;
+
+    overflow: auto;
+    grid-area: details;
+    width: 100%;
+
+    @include for-desktop-up {
+      min-height: 350px;
+      max-height: fit-content;
+    }
+  }
+
+  // shadow applied to intro and to leaf-details container (desktop only)
+  @include for-desktop-up {
+    #intro,
+    #leaf-details {
+      $shadow: rgba(0, 0, 0, 0.4);
+      box-shadow: 0px 2px 4px $shadow, 0px 4px 5px $shadow, 0px 1px 10px $shadow;
+    }
+  }
+
+  article {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    scroll-bar: thin;
+    overscroll-behavior-x: contain;
+    background-color: $nav-bg-color;
+    color: $nearwhite;
+    padding: 52px 16px 16px;
+
+    @include for-desktop-up {
+      max-height: 575px;
+    }
+
+    // styles for content within panel
+    header {
+      h1 {
+        margin-bottom: 2px;
+      }
+      aside,
+      time {
+        // branch name, display date
+        font-weight: 700;
+        font-size: 18px;
+        @include for-desktop-up {
+          font-size: 20px;
+        }
+      }
+
+      margin-bottom: 16px;
+
+      // figure attribution (provisional styles)
+      .attribution {
+        display: block;
+        font-size: 85%;
+      }
+
+      // branch name has leaf icon
+      aside {
+        span {
+          vertical-align: top;
+          line-height: 31px;
+          @include for-desktop-up {
+            line-height: 45px;
+          }
+        }
+
+        // use pseudo-element to add leaf icon as a mask
+        &::before {
+          @include leaf-icon;
+        }
+      }
+    }
+
+    // for readability on portrait tablet (which uses mobile layout),
+    // constrain max width and center blocks within the panel
+    > *:not(ul) {
+      max-width: 32em;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    // don't diplay view on tree link when actually viewing on the tree
+    .view-on-tree {
+      display: none;
+    }
+  }
+
+  // Scrollbar styling advice from: https://www.digitalocean.com/community/tutorials/css-scrollbars
+
+  ::-webkit-scrollbar {
+    width: 8px; /* width of the entire scrollbar */
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: $nav-bg-color; /* color of the tracking area */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: $scrollbar-color; /* color of the scroll thumb */
+    border-radius: 20px; /* roundness of the scroll thumb */
+  }
+
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: $scrollbar-color $nav-bg-color; /* scroll thumb and track */
+}
+
+// special case: tag is active but intro panel is closed
+body.tag-active.home main > aside {
+  @include for-mobile {
+    // closed panel should be exactly the height of the tag on mobile
+    &.closed {
+      height: $tag-height;
+      visibility: visible;
+
+      // ensure nested content remains hidden from screen readers
+      article {
+        visibility: hidden;
+      }
+    }
+  }
+}
+
+#panel-legend {
+  /* use column flex to wrap labels in two columns */
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  height: 194px;
+  margin-top: 20px;
+  margin-left: 0;
+  width: 288px;
+
+  @include for-desktop-up {
+    width: 100%;
+  }
+
+  li {
+    max-width: 49%;
+    height: 54px;
+    /* use flex to wrap text and center vertically */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    // use pseudo-element to add leaf icon as a mask
+    &::before {
+      @include leaf-icon;
+
+      height: 100%;
+      min-width: 16px;
+
+      @include for-desktop-up {
+        min-width: 20px;
+      }
+    }
+
+    a {
+      line-height: 21px;
+      padding-left: 8px;
+      font-weight: normal;
+      text-decoration: none;
+      cursor: default; // don't indicate to sighted users that this is a link
+      pointer-events: none; // only allow keyboard nav, not click
+    }
+  }
+}
+
+// colors for leaf icons for branch indicator and legend
+// - branch legend in intro
+// - branch indicator in individual article when displayed in panel
+#panel-legend li,
+aside article header aside {
+  // color leaf based on branch
+  // TODO: consider making a branch to leaf color mapping in one place...
+  &.lands-waters::before {
+    color: map-get($leaf-color, "c");
+  }
+  &.communities::before {
+    color: map-get($leaf-color, "b");
+  }
+  &.university::before {
+    color: map-get($leaf-color, "e");
+  }
+  &.removals::before {
+    color: map-get($leaf-color, "a");
+  }
+  &.resistance-resurgence::before {
+    color: map-get($leaf-color, "d");
+  }
+}
+
+/* special handling for welcome in munsue at the top of the intro*/
+#intro [lang="umu"] strong {
+  font-style: italic;
+  font-weight: 900;
+  font-size: 1.2rem;
+  line-height: 1.8rem;
+  display: inline-block;
+  margin-bottom: 0.2rem;
+  margin-right: 0.2rem;
+
+  @include for-desktop-up {
+    font-size: 1.3rem;
+    line-height: 1.95rem;
+    margin-right: 0.4rem;
+  }
+}
+
+// Error message for leaf load error; hidden by default
+#leaferror {
+  display: none;
+
+  // visible when present in panel container due to loading error
+  aside & {
+    display: block;
+  }
+}

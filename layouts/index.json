@@ -1,0 +1,2 @@
+{{/* output data as JSON for use in viz */}}
+{{ partial "leaf_data.json" . }}

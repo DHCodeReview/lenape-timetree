@@ -1,0 +1,75 @@
+// reset — import from package installed in node modules
+@import "the-new-css-reset/css/reset";
+
+@import "breakpoints";
+@import "colors";
+@import "fonts";
+@import "icons";
+@import "a11y";
+
+* {
+  // unset all in css reset somehow sets fill-opacity to 0.6; undo that
+  fill-opacity: 1;
+}
+
+// fonts
+$body-font: "Overlock", cursive;
+$base-font-size: 20px; // = 1rem
+
+html {
+  font-size: $base-font-size;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $body-font;
+  font-weight: 900;
+}
+
+h1 {
+  font-size: 1.2rem;
+  line-height: 1.8rem;
+  margin: 0.8rem 0;
+
+  @include for-desktop-up {
+    font-size: 1.3rem;
+    line-height: 1.95rem;
+    margin: 1em 0;
+  }
+}
+
+h2 {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-bottom: 0.4rem;
+
+  @include for-desktop-up {
+    font-size: 1.1rem;
+    line-height: 1.65rem;
+  }
+}
+
+body {
+  font-family: $body-font;
+  font-size: 0.9rem;
+  line-height: 1.35rem;
+
+  @include for-desktop-up {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
+
+footer {
+  font-size: 16px;
+  line-height: 22px;
+
+  @include for-desktop-up {
+    font-size: 18px;
+    line-height: 25px;
+  }
+}

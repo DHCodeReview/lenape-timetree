@@ -1,0 +1,81 @@
+/* phosphor icons
+   https://phosphoricons.com/
+
+   Rather than load the full set, download and define only the ones we are using
+*/
+
+@mixin phosphoricon($path) {
+  $url: url("/img/icons/phosphor/" + $path);
+  -webkit-mask-image: $url;
+  mask-image: $url;
+}
+
+i[class^="ph-"] {
+  display: inline-block;
+  width: 1.25em;
+  height: 1.25em;
+  // use svg as a mask and then set background color with css
+  background-color: currentColor;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+.ph-info {
+  @include phosphoricon("info.svg");
+}
+.ph-x {
+  @include phosphoricon("x.svg");
+}
+.ph-arrows-in {
+  @include phosphoricon("arrows-in.svg");
+}
+.ph-arrows-in.ph-fill {
+  @include phosphoricon("arrows-in-fill.svg");
+}
+.ph-copyright.ph-bold {
+  @include phosphoricon("copyright-bold.svg");
+}
+.ph-plus.ph-bold {
+  @include phosphoricon("plus-bold.svg");
+}
+.ph-minus.ph-bold {
+  @include phosphoricon("minus-bold.svg");
+}
+.ph-file-pdf.ph-fill {
+  @include phosphoricon("file-pdf-fill.svg");
+}
+.ph-file-doc.ph-fill {
+  @include phosphoricon("file-doc-fill.svg");
+}
+.ph-file-image.ph-fill {
+  @include phosphoricon("file-image-fill.svg");
+}
+.ph-arrow-square-out.ph-fill {
+  @include phosphoricon("arrow-square-out-fill.svg");
+}
+
+// leaf icon for branches;
+// currently assumes applied to a pseudo-element
+@mixin leaf-icon {
+  -webkit-mask-image: url(/img/icons/leaf.svg);
+  mask-image: url(/img/icons/leaf.svg);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  background-color: currentColor;
+  display: inline-block;
+  content: " ";
+  width: 14px;
+  margin-right: 8px;
+  height: 31px;
+
+  @include for-desktop-up {
+    width: 20px;
+    height: 45px;
+  }
+}

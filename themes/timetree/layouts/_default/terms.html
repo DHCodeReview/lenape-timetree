@@ -1,0 +1,19 @@
+{{/* tag index page */}}
+{{ define "main" }}
+  <article class="tag-index">
+    <h1>{{- .Title -}}</h1>
+    {{ with .Content }}
+    <div>{{ . }}</div>
+    {{ end }}
+      <section class="tags">
+        <ul>
+          {{ range .Data.Terms.Alphabetical }}
+          <li>
+            {{- $tagSlug := partial "getTagSlug.html" .Term -}}
+            <a href="{{ relURL "" }}?tag={{ $tagSlug }}">{{ .Page.Title }}
+            <span class="count">({{ .Count }})</span></a>
+           </li>
+          {{ end }}
+        </ul>
+</section>
+{{ end }}
